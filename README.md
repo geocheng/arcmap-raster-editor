@@ -1,4 +1,4 @@
-ArcMap-Raster-Editor
+ArcMap Raster Editor
 ====================
 
-Interactive raster editing toolbar for ArcMap 10.x 
+The 10.0 branch is the development branch specific for ArcMap 10.0/10.1
