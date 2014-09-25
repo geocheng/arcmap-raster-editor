@@ -13,19 +13,14 @@ using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Desktop.AddIns;
 using ESRI.ArcGIS.Geodatabase;
 
-using RasterEditor.Forms;
 using RasterEditor.Raster;
 
-namespace RasterEditor                        
+namespace RasterEditor
 {
-    /// <summary>
-    /// Provides access to members for identification function for values and statistic of raster pixels.
-    /// </summary>
     public class IdentifyTool : ESRI.ArcGIS.Desktop.AddIns.Tool
     {
         public IdentifyTool()
         {
-           
         }
 
         #region Attributes
@@ -79,16 +74,16 @@ namespace RasterEditor
         {
             try
             {
-                Display.ClearSelection();
+                Display.ClearSelections();
                 Editor.SelectionRecord.Clear();
 
                 UID dockWinID = new UIDClass();
-                dockWinID.Value = ThisAddIn.IDs.RasterEditor_Forms_IdentifyForm;
+                dockWinID.Value = ThisAddIn.IDs.IdentifyForm;
                 IDockableWindow dockWindow = ArcMap.DockableWindowManager.GetDockableWindow(dockWinID);
                 if (dockWindow.IsVisible())
                 {
                     dockWindow.Show(false);
-                    IdentifyForm identifyForm = AddIn.FromID<IdentifyForm.AddinImpl>(ThisAddIn.IDs.RasterEditor_Forms_IdentifyForm).UI;
+                    IdentifyForm identifyForm = AddIn.FromID<IdentifyForm.AddinImpl>(ThisAddIn.IDs.IdentifyForm).UI;
                     identifyForm.ClearValues();
                 }
             }
@@ -99,15 +94,15 @@ namespace RasterEditor
 
             return base.OnDeactivate();
         }
-         
+
         protected override void OnActivate()
         {
             try
             {
                 UID dockWinID = new UIDClass();
-                dockWinID.Value = ThisAddIn.IDs.RasterEditor_Forms_IdentifyForm;
+                dockWinID.Value = ThisAddIn.IDs.IdentifyForm;
                 IDockableWindow dockWindow = ArcMap.DockableWindowManager.GetDockableWindow(dockWinID);
-                if (!dockWindow.IsVisible() && Editor.ActiveLayer != null)
+                if (!dockWindow.IsVisible())
                 {
                     dockWindow.Show(true);
                 }
@@ -125,12 +120,12 @@ namespace RasterEditor
             Enabled = ArcMap.Application != null;
 
             try
-            {
+            {                                                  
                 if (activeLayer != Editor.ActiveLayer)
                 {
                     activeLayer = Editor.ActiveLayer;
 
-                    Display.ClearSelection();
+                    Display.ClearSelections();
                     Editor.SelectionRecord.Clear();
 
                     if (Editor.ActiveLayer != null)
@@ -139,7 +134,7 @@ namespace RasterEditor
                         IRasterProps rasterProp = (IRasterProps)rasterLayer.Raster;
                         maxIndex = new Position(rasterProp.Width - 1, rasterProp.Height - 1);
 
-                        IdentifyForm identifyForm = AddIn.FromID<IdentifyForm.AddinImpl>(ThisAddIn.IDs.RasterEditor_Forms_IdentifyForm).UI;
+                        IdentifyForm identifyForm = AddIn.FromID<IdentifyForm.AddinImpl>(ThisAddIn.IDs.IdentifyForm).UI;
                         identifyForm.ClearValues();
                         identifyForm.SetLayer(activeLayer.Name);
                         System.Array noDataValue = (System.Array)rasterProp.NoDataValue;
@@ -147,7 +142,7 @@ namespace RasterEditor
                     }
                     else
                     {
-                        IdentifyForm identifyForm = AddIn.FromID<IdentifyForm.AddinImpl>(ThisAddIn.IDs.RasterEditor_Forms_IdentifyForm).UI;
+                        IdentifyForm identifyForm = AddIn.FromID<IdentifyForm.AddinImpl>(ThisAddIn.IDs.IdentifyForm).UI;
                         identifyForm.ClearValues();
                     }
                 }
@@ -166,7 +161,7 @@ namespace RasterEditor
             {
                 try
                 {
-                    Display.ClearSelection();
+                    Display.ClearSelections();
                     Editor.SelectionRecord.Clear();
 
                     IRgbColor color = new RgbColorClass();
@@ -193,9 +188,9 @@ namespace RasterEditor
 
         protected override void OnMouseMove(ESRI.ArcGIS.Desktop.AddIns.Tool.MouseEventArgs arg)
         {
- 	        base.OnMouseMove(arg);
+            base.OnMouseMove(arg);
 
-            if(arg.Button == MouseButtons.Left && Editor.ActiveLayer != null)
+            if (arg.Button == MouseButtons.Left && Editor.ActiveLayer != null)
             {
                 IPoint moveCoor = Editor.ScreenCoor2MapCoor(arg.X, arg.Y);
                 newEnvelopeFeedback.MoveTo(moveCoor);
@@ -213,11 +208,11 @@ namespace RasterEditor
                     IEnvelope envelop = newEnvelopeFeedback.Stop();
 
                     UID dockWinID = new UIDClass();
-                    dockWinID.Value = ThisAddIn.IDs.RasterEditor_Forms_IdentifyForm;
+                    dockWinID.Value = ThisAddIn.IDs.IdentifyForm;
 
                     // Use GetDockableWindow directly as we want the client IDockableWindow not the internal class
                     IDockableWindow dockWindow = ArcMap.DockableWindowManager.GetDockableWindow(dockWinID);
-                    IdentifyForm identifyForm = AddIn.FromID<IdentifyForm.AddinImpl>(ThisAddIn.IDs.RasterEditor_Forms_IdentifyForm).UI;
+                    IdentifyForm identifyForm = AddIn.FromID<IdentifyForm.AddinImpl>(ThisAddIn.IDs.IdentifyForm).UI;
 
                     Position tlCorner, brCorner;
                     if (envelop.UpperLeft.IsEmpty)
@@ -237,17 +232,15 @@ namespace RasterEditor
                         return;
                     }
 
-                    tlCorner.Adjust(Raster.RasterFile.Origin ,maxIndex);
-                    brCorner.Adjust(Raster.RasterFile.Origin, maxIndex);
+                    tlCorner.Adjust(0, 0, maxIndex.Column, maxIndex.Row);
+                    brCorner.Adjust(0, 0, maxIndex.Column, maxIndex.Row);
 
                     Display.DrawSelectionBox(tlCorner, brCorner);
                     double[,] values = Editor.GetValues(tlCorner, brCorner, ((IRasterLayer)Editor.ActiveLayer).Raster);
 
                     identifyForm.SetValues(tlCorner, brCorner, values);
                     if (!dockWindow.IsVisible())
-                    {
                         dockWindow.Show(true);
-                    }
                 }
                 catch (Exception ex)
                 {
@@ -258,4 +251,5 @@ namespace RasterEditor
 
         #endregion
     }
+
 }

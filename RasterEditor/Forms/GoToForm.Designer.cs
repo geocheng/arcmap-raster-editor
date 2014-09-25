@@ -44,34 +44,34 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(3, 31);
+            this.label1.Location = new System.Drawing.Point(3, 34);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(32, 13);
+            this.label1.Size = new System.Drawing.Size(29, 12);
             this.label1.TabIndex = 0;
             this.label1.Text = "Row:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(150, 31);
+            this.label2.Location = new System.Drawing.Point(150, 34);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 13);
+            this.label2.Size = new System.Drawing.Size(47, 12);
             this.label2.TabIndex = 1;
             this.label2.Text = "Column:";
             // 
             // rowIndexTextBox
             // 
-            this.rowIndexTextBox.Location = new System.Drawing.Point(38, 28);
+            this.rowIndexTextBox.Location = new System.Drawing.Point(38, 31);
             this.rowIndexTextBox.Name = "rowIndexTextBox";
-            this.rowIndexTextBox.Size = new System.Drawing.Size(100, 20);
+            this.rowIndexTextBox.Size = new System.Drawing.Size(100, 21);
             this.rowIndexTextBox.TabIndex = 2;
             this.rowIndexTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // colIndexTextBox
             // 
-            this.colIndexTextBox.Location = new System.Drawing.Point(201, 28);
+            this.colIndexTextBox.Location = new System.Drawing.Point(201, 31);
             this.colIndexTextBox.Name = "colIndexTextBox";
-            this.colIndexTextBox.Size = new System.Drawing.Size(100, 20);
+            this.colIndexTextBox.Size = new System.Drawing.Size(100, 21);
             this.colIndexTextBox.TabIndex = 3;
             this.colIndexTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
@@ -126,9 +126,9 @@
             // 
             // GoToForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(308, 57);
+            this.ClientSize = new System.Drawing.Size(308, 58);
             this.Controls.Add(this.toolStrip);
             this.Controls.Add(this.colIndexTextBox);
             this.Controls.Add(this.rowIndexTextBox);

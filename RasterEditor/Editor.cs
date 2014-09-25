@@ -5,16 +5,12 @@ using System.Text;
 using System.IO;
 using System.Windows.Forms;
 
-using ESRI.ArcGIS.Desktop.AddIns;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.DataSourcesRaster;
 using ESRI.ArcGIS.Geodatabase;
-using ESRI.ArcGIS.esriSystem;
 
 using RasterEditor.Raster;
-using RasterEditor.EditorMenu;
-using RasterEditor.EditorMenu.Edition;
 
 namespace RasterEditor
 {
@@ -92,39 +88,9 @@ namespace RasterEditor
         public static void StartEditing()
         {
             Editor.IsEditing = true;
+            //Drawing.Clear();
             Editor.EditRecord.Clear();
-
-            #region Controls Change
-
-            // While editing, the active layer cannot be changed
-            LayerComboBox layerComboBox = AddIn.FromID<LayerComboBox>(ThisAddIn.IDs.LayerComboBox);
-            layerComboBox.IsEnabled = false;
-
-            // Enable the save button
-            SaveEditsButton saveButton = AddIn.FromID<SaveEditsButton>(ThisAddIn.IDs.RasterEditor_EditorMenu_Edition_SaveEditsButton);
-            saveButton.IsEnabled = true;
-
-            // Enable the save as button
-            SaveEditsAsButton saveAsButton = AddIn.FromID<SaveEditsAsButton>(ThisAddIn.IDs.RasterEditor_EditorMenu_Edition_SaveEditsAsButton);
-            saveAsButton.IsEnabled = true;
-
-            // Enable the stop button
-            StopEditingButton stopButton = AddIn.FromID<StopEditingButton>(ThisAddIn.IDs.RasterEditor_EditorMenu_Edition_StopEditingButton);
-            stopButton.IsEnabled = true;
-
-            // Enable the select tool
-            SelectTool selectTool = AddIn.FromID<SelectTool>(ThisAddIn.IDs.SelectTool);
-            selectTool.IsEnabled = true;
-
-            // Disable the start button
-            StartEditingButton startEditingButton = AddIn.FromID<StartEditingButton>(ThisAddIn.IDs.RasterEditor_EditorMenu_Edition_StartEditingButton);
-            startEditingButton.IsEnabled = false;
-
-            // Enable the ShowEditsButton
-            ShowEditsButton showEditsButton = AddIn.FromID<ShowEditsButton>(ThisAddIn.IDs.RasterEditor_EditorMenu_ShowEditsButton);
-            showEditsButton.IsEnabled = true;
-
-            #endregion
+            //Editor.SelectionRecord.Clear();
         }
 
         /// <summary>
@@ -141,31 +107,6 @@ namespace RasterEditor
             {
                 ArcMap.Application.CurrentTool = null;
             }
-
-            #region Controls Change
-
-            StopEditingButton stopEditingButton = AddIn.FromID<StopEditingButton>(ThisAddIn.IDs.RasterEditor_EditorMenu_Edition_StopEditingButton);
-            stopEditingButton.IsEnabled = false;
-
-            StartEditingButton startEditionButton = AddIn.FromID<StartEditingButton>(ThisAddIn.IDs.RasterEditor_EditorMenu_Edition_StartEditingButton);
-            startEditionButton.IsEnabled = true;
-
-            SaveEditsButton saveEditsButton = AddIn.FromID<SaveEditsButton>(ThisAddIn.IDs.RasterEditor_EditorMenu_Edition_SaveEditsButton);
-            saveEditsButton.IsEnabled = false;
-
-            SaveEditsAsButton saveEditsAsButton = AddIn.FromID<SaveEditsAsButton>(ThisAddIn.IDs.RasterEditor_EditorMenu_Edition_SaveEditsAsButton);
-            saveEditsAsButton.IsEnabled = false;
-
-            LayerComboBox layerComboBox = AddIn.FromID<LayerComboBox>(ThisAddIn.IDs.LayerComboBox);
-            layerComboBox.IsEnabled = true;
-
-            SelectTool selectTool = AddIn.FromID<SelectTool>(ThisAddIn.IDs.SelectTool);
-            selectTool.IsEnabled = false;
-
-            ShowEditsButton showEditsButton = AddIn.FromID<ShowEditsButton>(ThisAddIn.IDs.RasterEditor_EditorMenu_ShowEditsButton);
-            showEditsButton.IsEnabled = false;
-
-            #endregion
         }
 
         /// <summary>
@@ -173,7 +114,7 @@ namespace RasterEditor
         /// </summary>
         /// <param name="fileName">The location of raster file.</param>
         /// <param name="activeView"></param>
-        public static void AddLayer(string fileName)
+        public static void AddLayer(string fileName)           
         {
             IRasterLayer rasterLayer = new RasterLayerClass();
             rasterLayer.CreateFromFilePath(fileName);
@@ -244,38 +185,16 @@ namespace RasterEditor
         }
 
         /// <summary>
-        /// Save the extent change into a new raster file.
+        /// Save the edition as a specified file.
         /// </summary>
-        /// <param name="rasterLayer">Raster layer</param>
-        /// <param name="fileName">Path of the output file</param>
-        /// <param name="xmin">Minimum X coordinate</param>
-        /// <param name="ymin">Minimum Y coordinate</param>                                                                          
-        /// <param name="pixelSize">Pixel size</param>
-        public static void SaveExtentAs(IRasterLayer rasterLayer, string fileName, double xmin, double ymin, double pixelSize)
-        {
-            IRasterProps rasterProps = (IRasterProps)rasterLayer.Raster;
-            IEnvelope extent = new EnvelopeClass();
-            extent.PutCoords(xmin, ymin, xmin + rasterProps.Width * pixelSize, ymin + rasterProps.Height * pixelSize);
-            extent.Project(rasterProps.Extent.SpatialReference);
-            rasterProps.Extent = extent;
-
-            ISaveAs saveAs = (ISaveAs)rasterLayer.Raster;
-            IWorkspaceFactory workspaceFactory = new RasterWorkspaceFactoryClass();
-            IWorkspace mWorkspace = workspaceFactory.OpenFromFile(System.IO.Path.GetDirectoryName(fileName), 0);
-            saveAs.SaveAs(System.IO.Path.GetFileName(fileName),
-                          mWorkspace,
-                          RasterFile.GetFormat(System.IO.Path.GetExtension(fileName)));
-        }
-
-        /// <summary>
-        /// Save edits into a new raster file.
-        /// </summary>
-        /// <param name="fileName">Path of the saved file.</param>
-        /// <param name="format">Format of the saved file.</param>
+        /// <param name="fileName"></param>
         public static void SaveEditsAs(string fileName)
         {
             if (ActiveLayer == null)
                 return;
+
+            Random rnd = new Random();
+            string tempFile = rnd.Next().ToString();
 
             ESRI.ArcGIS.RuntimeManager.BindLicense(ESRI.ArcGIS.ProductCode.EngineOrDesktop);
 
@@ -288,10 +207,13 @@ namespace RasterEditor
             // Open the new file save location
             IWorkspace mWorkspace = workspaceFactory.OpenFromFile(System.IO.Path.GetDirectoryName(fileName), 0);
 
+            // Copy file to the new location   
+            rasterDataset.Copy(tempFile, mWorkspace);
+
             // Save the original file to a new file
             ISaveAs saveAs = (ISaveAs)rasterDataset;
             IRasterDataset2 mRasterDataset = (IRasterDataset2)saveAs.SaveAs(System.IO.Path.GetFileName(fileName),
-                                                                            mWorkspace, 
+                                                                            mWorkspace,
                                                                             RasterFile.GetFormat(System.IO.Path.GetExtension(fileName)));
             IRaster mRaster = mRasterDataset.CreateFullRaster();
 
@@ -326,6 +248,30 @@ namespace RasterEditor
         }
 
         /// <summary>
+        /// Save the extent change into a new raster file.
+        /// </summary>
+        /// <param name="rasterLayer">Raster layer</param>
+        /// <param name="fileName">Path of the output file</param>
+        /// <param name="xmin">Minimum X coordinate</param>
+        /// <param name="ymin">Minimum Y coordinate</param>                                                                          
+        /// <param name="pixelSize">Pixel size</param>
+        public static void SaveExtentAs(IRasterLayer rasterLayer, string fileName, double xmin, double ymin, double pixelSize)
+        {
+            IRasterProps rasterProps = (IRasterProps)rasterLayer.Raster;
+            IEnvelope extent = new EnvelopeClass();
+            extent.PutCoords(xmin, ymin, xmin + rasterProps.Width * pixelSize, ymin + rasterProps.Height * pixelSize);
+            extent.Project(rasterProps.Extent.SpatialReference);
+            rasterProps.Extent = extent;
+
+            ISaveAs saveAs = (ISaveAs)rasterLayer.Raster;
+            IWorkspaceFactory workspaceFactory = new RasterWorkspaceFactoryClass();
+            IWorkspace mWorkspace = workspaceFactory.OpenFromFile(System.IO.Path.GetDirectoryName(fileName), 0);
+            saveAs.SaveAs(System.IO.Path.GetFileName(fileName),
+                          mWorkspace,
+                          RasterFile.GetFormat(System.IO.Path.GetExtension(fileName)));
+        }
+
+        /// <summary>
         /// Gets value of pixel at the specified position.
         /// </summary>
         /// <param name="pos"></param>
@@ -333,7 +279,7 @@ namespace RasterEditor
         /// <returns></returns>
         public static double GetValue(Position pos, IRasterLayer rasterLayer)
         {
-            return GetValue(pos, rasterLayer.Raster);    
+            return GetValue(pos, rasterLayer.Raster);
         }
 
         /// <summary>
@@ -353,12 +299,12 @@ namespace RasterEditor
 
             return Convert.ToDouble(pixelBlock.GetVal(0, 0, 0));
         }
-                                                              
+
         /// <summary>
-        /// Gets values of pixels within a specified rectangle region.
+        /// Get the pixel values in a region of the input raster.
         /// </summary>
-        /// <param name="tlCorner">Top-left corner of the region.</param>
-        /// <param name="brCorner">Bottom-right corner of the region.</param>
+        /// <param name="tlCorner"></param>
+        /// <param name="brCorner"></param>
         /// <param name="raster"></param>
         /// <returns></returns>
         public static double[,] GetValues(Position tlCorner, Position brCorner, IRaster raster)
@@ -394,7 +340,7 @@ namespace RasterEditor
         }
 
         /// <summary>
-        /// Converts the csharp value to the ArcObject pixel value.
+        /// Convert the csharp value to the ArcObject pixel value.
         /// </summary>
         /// <param name="csharpValue">Cshapr value</param>
         /// <param name="pixelValueType">The pixel type of ouput value</param>
@@ -440,20 +386,6 @@ namespace RasterEditor
                 pixelValue = null;
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Redraws the selection and editss.
-        /// </summary>
-        public static void Refresh()
-        {
-            Display.ClearEdits();
-            Display.ClearSelection();
-
-            Display.DrawSelectionBox();
-            Display.DrawEditionBox();
-
-            ArcMap.Document.ActiveView.Refresh();
         }
 
         #endregion
@@ -510,7 +442,7 @@ namespace RasterEditor
 
             // Set new values
             IPixelBlock3 pixelBlock3 = (IPixelBlock3)pixelBlock;
-            System.Array pixels = (System.Array)pixelBlock3.get_PixelData(0);
+            Array pixels = (Array)pixelBlock3.get_PixelData(0);
 
             for (int i = 0; i < Editor.EditRecord.Count; i++)
             {

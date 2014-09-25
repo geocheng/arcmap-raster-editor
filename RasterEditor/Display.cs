@@ -99,7 +99,7 @@ namespace RasterEditor
         /// <summary>
         /// Clear all selection graphic elements.
         /// </summary>
-        public static void ClearSelection()
+        public static void ClearSelections()
         {
             IActiveView activeView = ArcMap.Document.ActiveView;
 
@@ -208,7 +208,7 @@ namespace RasterEditor
         public static void Clear()
         {
             Display.ClearEdits();
-            Display.ClearSelection();
+            Display.ClearSelections();
         }
 
         /// <summary>

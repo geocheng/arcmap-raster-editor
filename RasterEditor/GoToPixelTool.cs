@@ -9,10 +9,6 @@ namespace RasterEditor
 {
     public class GoToPixelTool : ESRI.ArcGIS.Desktop.AddIns.Button
     {
-        public GoToPixelTool()
-        {
-        }
-
         protected override void OnClick()
         {
             if (FormReference.GoToForm != null)
@@ -22,10 +18,6 @@ namespace RasterEditor
 
             GoToForm goToForm = new GoToForm();
             goToForm.Show();
-        }
-
-        protected override void OnUpdate()
-        {
         }
     }
 }

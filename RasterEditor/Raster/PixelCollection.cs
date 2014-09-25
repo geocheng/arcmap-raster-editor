@@ -13,7 +13,7 @@ namespace RasterEditor.Raster
         #region Construction Method
 
         /// <summary>
-        /// Initializes an empty instance of RasterCellCollection class.
+        /// Initializes an empty instance of PixelCollection class.
         /// </summary>
         public PixelCollection()
         {
@@ -21,7 +21,7 @@ namespace RasterEditor.Raster
         }
         
         /// <summary>
-        /// Initializes an instance of RasterCellCollection class with an existing list of raster cells. 
+        /// Initializes an instance of PixelCollection class with an existing list of raster cells. 
         /// </summary>
         /// <param name="rasterCells"></param>
         public PixelCollection(List<Pixel> rasterCells)

@@ -8,10 +8,11 @@ using ESRI.ArcGIS;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Desktop.AddIns;
 
-using RasterEditor.EditorMenu.Edition;
-
 namespace RasterEditor
 {
+    /// <summary>
+    /// ArcMap tool that provides identification function for values and statistic of raster pixels.
+    /// </summary>
     public class LayerComboBox : ESRI.ArcGIS.Desktop.AddIns.ComboBox
     {
         /// <summary>
@@ -50,6 +51,7 @@ namespace RasterEditor
 
         /// <summary>
         /// Periodically check whether map or layers changed.
+        /// # Important # Some scripts are commented as the EditorControl is not implemented.
         /// </summary>
         protected override void OnUpdate()
         {
@@ -64,8 +66,7 @@ namespace RasterEditor
             if (layerCount == currentMap.LayerCount)
                 return;
 
-            // Check whether there are layers added or deleted
-            #region
+            #region Check whether there are layers added or deleted
 
             if (layerCount > currentMap.LayerCount)
             {
@@ -88,14 +89,14 @@ namespace RasterEditor
                     if (!flag)
                         removelist.Add(item.Cookie);
                 }
-       
+
                 foreach (int cookie in removelist)
                 {
                     Item item = this.GetItem(cookie);
-                    if (Editor.ActiveLayer !=null && item.Caption == Editor.ActiveLayer.Name)
+                    if (Editor.ActiveLayer != null && item.Caption == Editor.ActiveLayer.Name)
                     {
                         activeLayerDeleted = true;
-                    }    
+                    }
 
                     this.Remove(cookie);
                 }
@@ -110,6 +111,7 @@ namespace RasterEditor
                     MessageBox.Show("The editing layer has been removed!", "Error");
 
                     Editor.StopEditing();
+                    EditorControl.StopEditing();
                 }
 
                 this.layerCount = currentMap.LayerCount;
@@ -174,7 +176,7 @@ namespace RasterEditor
             for (int i = 0; i < currentMap.LayerCount; i++)
             {
                 ILayer layer = currentMap.Layer[i];
-                if(layer is IRasterLayer)
+                if (layer is IRasterLayer)
                 {
                     int cookie = this.Add(layer.Name, layer);
                 }

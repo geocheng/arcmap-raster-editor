@@ -12,7 +12,6 @@ using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.DataSourcesRaster;
 using ESRI.ArcGIS.Desktop.AddIns;
 
-using RasterEditor.Forms;
 using RasterEditor.Raster;
 
 namespace RasterEditor
@@ -37,7 +36,7 @@ namespace RasterEditor
 
         private Position maxIndex = null;
 
-        #endregion        
+        #endregion
 
         #region Properties
 
@@ -74,16 +73,16 @@ namespace RasterEditor
         {
             try
             {
-                Display.ClearSelection();
+                Display.ClearSelections();
                 Editor.SelectionRecord.Clear();
 
                 UID dockWinID = new UIDClass();
-                dockWinID.Value = ThisAddIn.IDs.RasterEditor_Forms_EditForm;
+                dockWinID.Value = ThisAddIn.IDs.EditForm;
                 IDockableWindow dockWindow = ArcMap.DockableWindowManager.GetDockableWindow(dockWinID);
                 if (dockWindow.IsVisible())
                 {
                     dockWindow.Show(false);
-                    EditForm editForm = AddIn.FromID<EditForm.AddinImpl>(ThisAddIn.IDs.RasterEditor_Forms_EditForm).UI;
+                    EditForm editForm = AddIn.FromID<EditForm.AddinImpl>(ThisAddIn.IDs.EditForm).UI;
                     editForm.ClearValues();
                 }
             }
@@ -100,7 +99,7 @@ namespace RasterEditor
             try
             {
                 UID dockWinID = new UIDClass();
-                dockWinID.Value = ThisAddIn.IDs.RasterEditor_Forms_EditForm;
+                dockWinID.Value = ThisAddIn.IDs.EditForm;
                 IDockableWindow dockWindow = ArcMap.DockableWindowManager.GetDockableWindow(dockWinID);
                 if (!dockWindow.IsVisible())
                 {
@@ -112,7 +111,7 @@ namespace RasterEditor
                 IRasterProps rasterProp = (IRasterProps)rasterLayer.Raster;
                 maxIndex = new Position(rasterProp.Width - 1, rasterProp.Height - 1);
 
-                EditForm editForm = AddIn.FromID<EditForm.AddinImpl>(ThisAddIn.IDs.RasterEditor_Forms_EditForm).UI;
+                EditForm editForm = AddIn.FromID<EditForm.AddinImpl>(ThisAddIn.IDs.EditForm).UI;
                 editForm.SetLayer(activeLayer.Name);
                 System.Array noDataValue = (System.Array)rasterProp.NoDataValue;
                 editForm.RasterGridView.NoDataValue = Convert.ToDouble(noDataValue.GetValue(0));
@@ -134,7 +133,7 @@ namespace RasterEditor
             {
                 try
                 {
-                    Display.ClearSelection();
+                    Display.ClearSelections();
                     Editor.SelectionRecord.Clear();
 
                     IRgbColor color = new RgbColorClass();
@@ -154,7 +153,7 @@ namespace RasterEditor
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(string.Format("Unfortunately, the application meets an error.\n\nSource: {0}\nSite: {1}\nMessage: {2}", ex.Source, ex.TargetSite, ex.Message), "Error"); 
+                    MessageBox.Show(string.Format("Unfortunately, the application meets an error.\n\nSource: {0}\nSite: {1}\nMessage: {2}", ex.Source, ex.TargetSite, ex.Message), "Error");
                 }
             }
         }
@@ -169,7 +168,7 @@ namespace RasterEditor
                 newEnvelopeFeedback.MoveTo(moveCoor);
             }
         }
-                                                                 
+
         protected override void OnMouseUp(ESRI.ArcGIS.Desktop.AddIns.Tool.MouseEventArgs arg)
         {
             base.OnMouseDown(arg);
@@ -179,38 +178,32 @@ namespace RasterEditor
                 try
                 {
                     UID uid = new UIDClass();
-                    uid.Value = ThisAddIn.IDs.RasterEditor_Forms_EditForm;
+                    uid.Value = ThisAddIn.IDs.EditForm;
                     IDockableWindow dockWin = ArcMap.DockableWindowManager.GetDockableWindow(uid);
-                    EditForm editForm = AddIn.FromID<EditForm.AddinImpl>(ThisAddIn.IDs.RasterEditor_Forms_EditForm).UI;
+                    EditForm editForm = AddIn.FromID<EditForm.AddinImpl>(ThisAddIn.IDs.EditForm).UI;
 
                     IEnvelope envelop = newEnvelopeFeedback.Stop();
-             
+
                     Position tlCorner, brCorner;
                     if (envelop.UpperLeft.IsEmpty)
                     {
                         tlCorner = Editor.ScreenCoor2RasterCoor(arg.X, arg.Y);
                         brCorner = tlCorner;
-
-                        if (!tlCorner.Within(Raster.RasterFile.Origin ,maxIndex))
-                        {
-                            editForm.ClearValues();
-                            return;
-                        }
                     }
                     else
                     {
                         tlCorner = Editor.MapCoor2RasterCoor(envelop.UpperLeft);
                         brCorner = Editor.MapCoor2RasterCoor(envelop.LowerRight);
-
-                        if (!IsIntersect(tlCorner, brCorner, maxIndex))
-                        {
-                            editForm.ClearValues();
-                            return;
-                        }
-
-                        tlCorner.Adjust(Raster.RasterFile.Origin ,maxIndex);
-                        brCorner.Adjust(Raster.RasterFile.Origin, maxIndex);
                     }
+
+                    if (!IsIntersect(tlCorner, brCorner, maxIndex))
+                    {
+                        editForm.ClearValues();
+                        return;
+                    }
+
+                    tlCorner.Adjust(0, 0, maxIndex.Column, maxIndex.Row);
+                    brCorner.Adjust(0, 0, maxIndex.Column, maxIndex.Row);
 
                     Display.DrawSelectionBox(tlCorner, brCorner);
 
@@ -232,7 +225,7 @@ namespace RasterEditor
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(string.Format("Unfortunately, the application meets an error.\n\nSource: {0}\nSite: {1}\nMessage: {2}", ex.Source, ex.TargetSite, ex.Message), "Error"); 
+                    MessageBox.Show(string.Format("Unfortunately, the application meets an error.\n\nSource: {0}\nSite: {1}\nMessage: {2}", ex.Source, ex.TargetSite, ex.Message), "Error");
                 }
             }
         }

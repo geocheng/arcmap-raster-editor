@@ -11,7 +11,7 @@ namespace RasterEditor.Forms
 
         private static GoToForm goToForm = null;
         private static EditExtentForm editExtentForm = null;
-        private static OptionForm optionForm = null;
+        //private static OptionForm optionForm = null;
 
         #endregion
 
@@ -35,14 +35,14 @@ namespace RasterEditor.Forms
             get { return editExtentForm; }
         }
 
-        /// <summary>
-        /// Gets or sets the reference of the Option Form.
-        /// </summary>
-        public static OptionForm OptionForm
-        {
-            set { optionForm = value; }
-            get { return optionForm; }
-        }
+        ///// <summary>
+        ///// Gets or sets the reference of the Option Form.
+        ///// </summary>
+        //public static OptionForm OptionForm
+        //{
+        //    set { optionForm = value; }
+        //    get { return optionForm; }
+        //}
 
         #endregion
     }

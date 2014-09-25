@@ -16,7 +16,6 @@ namespace RasterEditor
         /// Calculate the statistic of given values.
         /// </summary>
         /// <param name="values"></param>
-        /// <param name="noDataValue"></param>
         /// <returns></returns>
         public static Dictionary<string, double> CalStat(double[] values, double noDataValue)
         {
@@ -40,7 +39,7 @@ namespace RasterEditor
             {
                 if (value != noDataValue)
                 {
-                    valueList.Add(value);
+                    valueList.Add(value);    
                 }
             }
             stat.Add("Count", valueList.Count);
@@ -53,7 +52,7 @@ namespace RasterEditor
             #endregion
 
             #region Min, Max, Range, Median
-
+            
             valueList.Sort();
             stat.Add("Min", valueList[0]);
             stat.Add("Max", valueList[valueList.Count - 1]);
@@ -64,7 +63,7 @@ namespace RasterEditor
                 int pos = Convert.ToInt32(valueList.Count / 2);
                 stat.Add("Median", (valueList[pos] + valueList[pos - 1]) / 2);
             }
-            else
+            else 
             {
                 stat.Add("Median", valueList[Convert.ToInt32((valueList.Count - 1) / 2)]);
             }

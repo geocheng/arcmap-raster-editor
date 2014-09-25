@@ -13,13 +13,13 @@ namespace RasterEditor.Raster
         #region Construction Method
 
         /// <summary>
-        /// Initialize a RasterPos class.
+        /// Initialize a Position class.
         /// </summary>
         public Position()
         { }
 
         /// <summary>
-        /// Initialize a RasterPos class and specify indexes of row and column.
+        /// Initialize a Position class and specify indexes of row and column.
         /// </summary>
         /// <param name="row">Row index</param>
         /// <param name="col">Column index</param>

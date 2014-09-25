@@ -114,6 +114,7 @@ namespace RasterEditor
             ISimpleLineSymbol editOutlineSymbol = new SimpleLineSymbolClass();
             editOutlineSymbol.Color = new RgbColorClass() { Red = 255, Green = 255, Blue = 0 };
             editOutlineSymbol.Width = 2;
+            editSymbol.Style = esriSimpleFillStyle.esriSFSBackwardDiagonal;
             editSymbol.Outline = editOutlineSymbol;
         }
 
